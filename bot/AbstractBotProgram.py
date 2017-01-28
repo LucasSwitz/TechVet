@@ -1,8 +1,6 @@
 import abc
 
 from enum import Enum
-
-from bot.Bot import Bot
 from command.CommandQueue import CommandQueue
 
 

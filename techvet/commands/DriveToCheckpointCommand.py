@@ -1,6 +1,7 @@
 from command.Command import Command
 from techvet.TechVet import TechVet
 
+
 class DriveToCheckpointCommand(Command):
     def __init__(self, checkpoint):
         Command.__init__(self)

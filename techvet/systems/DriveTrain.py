@@ -1,6 +1,6 @@
 from functools import partial
 
-from techvet.TechVetMap import HectorMap
+from techvet.TechVetMap import TechVetMap
 
 from System import System
 from techvet.TechVetOI import HectorOI
@@ -11,6 +11,8 @@ from PID.PIDController import PIDController
 LINE_SENSOR_ID = 0
 LINE_SENSOR_REGISTER = 0
 
+DEFAULT_SPEED = .7
+
 
 class DriveTrain(System):
     instance = None
@@ -18,23 +20,23 @@ class DriveTrain(System):
     @staticmethod
     def get_instance():
         if DriveTrain.instance is None:
-            DriveTrain.instance = DriveTrain([HectorMap.DRIVETRAIN_LEFT_FWD, HectorMap.DRIVETRAIN_LEFT_BKWD]
-                                             , [HectorMap.DRIVETRAIN_RIGHT_FWD, HectorMap.DRIVETRAIN_RIGHT_BKWD])
+            DriveTrain.instance = DriveTrain([TechVetMap.DRIVETRAIN_LEFT_FWD, TechVetMap.DRIVETRAIN_LEFT_BKWD]
+                                             , [TechVetMap.DRIVETRAIN_RIGHT_FWD, TechVetMap.DRIVETRAIN_RIGHT_BKWD])
         return DriveTrain.instance
 
     def __init__(self, left_pins, right_pins):
         System.__init__(self, "DriveTrain")
-        self._left_motor_controller = RPIPWNMotorController(left_pins)
-        self._right_motor_controller = RPIPWNMotorController(right_pins)
+        self._left_motor_controller = RPIPWNMotorController(left_pins, TechVetMap.DRIVETRAIN_LEFT_PWM)
+        self._right_motor_controller = RPIPWNMotorController(right_pins, TechVetMap.DRIVETRAIN_RIGHT_PWM)
         self._stick = HectorOI.drive_stick
-        self._line_tracker = LineTrackingSensor(LINE_SENSOR_ID,LINE_SENSOR_REGISTER)
-        self._pid = PIDController()
+        self._line_tracker = LineTrackingSensor(LINE_SENSOR_ID, LINE_SENSOR_REGISTER)
+        self._pid = PIDController(P=0.0002)
 
     def drive_on_line(self):
         self._pid.setPoint(2500)
         correction = self._pid.update(self._line_tracker.get())
 
-        correction
+        self.set(DEFAULT_SPEED + correction, DEFAULT_SPEED - correction)
 
     def _enable(self):
         pass

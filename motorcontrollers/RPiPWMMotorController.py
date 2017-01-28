@@ -4,17 +4,24 @@ io.setmode(io.BCM)
 
 
 class RPIPWNMotorController:
-    def __init__(self, pins):
-        set("delayed", "0")
-        set("mode", "pwm")
-        set("frequency", "500")
-        set("active", "1")
+    def __init__(self, pins, port):
+        self.set("delayed", "0")
+        self.set("mode", "pwm")
+        self.set("frequency", "500")
+        self.set("active", "1")
+
+        file_paths = {
+            1: "/sys/class/rpi-pwm/pwm0/",
+            2: "/sys/class/rpi-pwm/pwm1/"
+        }
+
+        self._path = file_paths.get(port)
+
         self._pins = pins
 
-    @staticmethod
-    def set(property_name, value):
+    def set(self, property_name, value):
         try:
-            f = open("/sys/class/rpi-pwm/pwm0/" + property_name, 'w')
+            f = open(self._path + property_name, 'w')
             f.write(value)
             f.close()
         except:
@@ -40,4 +47,4 @@ class RPIPWNMotorController:
             self.set_backwards()
 
         speed = int(abs(set_speed)) * 100
-        set("duty", str(speed))
+        self.set("duty", str(speed))
