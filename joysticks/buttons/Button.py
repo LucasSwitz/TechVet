@@ -2,6 +2,7 @@ import abc
 
 
 class Button:
+
     XL_ID = 0x30
     YL_ID = 0x31
     ZL_ID = 0x32

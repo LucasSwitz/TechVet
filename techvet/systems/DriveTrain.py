@@ -4,7 +4,7 @@ from techvet.TechVetMap import TechVetMap
 
 from System import System
 from techvet.TechVetOI import HectorOI
-from motorcontrollers.RPiPWMMotorController import RPIPWNMotorController
+from motorcontrollers.PWMMotorController import PWMMotorController
 from techvet.sensors.LineTrackingSensor import LineTrackingSensor
 from PID.PIDController import PIDController
 
@@ -26,8 +26,8 @@ class DriveTrain(System):
 
     def __init__(self, left_pins, right_pins):
         System.__init__(self, "DriveTrain")
-        self._left_motor_controller = RPIPWNMotorController(left_pins, TechVetMap.DRIVETRAIN_LEFT_PWM)
-        self._right_motor_controller = RPIPWNMotorController(right_pins, TechVetMap.DRIVETRAIN_RIGHT_PWM)
+        self._left_motor_controller = PWMMotorController(left_pins)
+        self._right_motor_controller = PWMMotorController(right_pins)
         self._stick = HectorOI.drive_stick
         self._line_tracker = LineTrackingSensor(LINE_SENSOR_ID, LINE_SENSOR_REGISTER)
         self._pid = PIDController(P=0.0002)
@@ -47,12 +47,12 @@ class DriveTrain(System):
         if abs(left_throttle) < .5:
             left_throttle = 0
 
-        self._left_motor_controller.set_percent_speed(left_throttle)
-        self._right_motor_controller.set_percent_speed(right_throttle)
+        self._left_motor_controller.set(left_throttle)
+        self._right_motor_controller.set(right_throttle)
 
     def stop(self):
-        self._left_motor_controller.set_percent_speed(0)
-        self._right_motor_controller.set_percent_speed(0)
+        self._left_motor_controller.set(0)
+        self._right_motor_controller.set(0)
 
     def get_cli_functions(self, args):
         functions = {

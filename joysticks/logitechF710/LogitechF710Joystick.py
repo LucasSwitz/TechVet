@@ -5,7 +5,7 @@ from joysticks.logitechF710.LogitechF710HatButton import LogitechF710HatButton
 
 
 class LogitechF710Joystick(Joystick):
-    LOGITECH_F710_PRODUCT_ID = 0xc21f
+    LOGITECH_F710_PRODUCT_ID = 0xc219
 
     def __init__(self):
         Joystick.__init__(self, 0)

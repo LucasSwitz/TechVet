@@ -12,8 +12,10 @@ class DriveByJoystickCommand(Command):
 
     def init(self):
         self._drive_train.dispatch_message("Driving with joysticks...")
+        print "Started Drive By Joystick"
 
     def execute(self):
+
         left_throttle = self._stick.get_left_Y()
         right_throttle = self._stick.get_right_Y()
 
