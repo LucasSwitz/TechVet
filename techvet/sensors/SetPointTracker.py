@@ -18,6 +18,7 @@ class SetPointTracker:
 
     def track(self):
         if not self._alive:
+            self._color_sensor.open()
             threading.Thread(target=self._track)
         else:
             self._paused = False

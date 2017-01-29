@@ -3,13 +3,16 @@ from functools import partial
 from techvet.TechVetMap import TechVetMap
 
 from System import System
-from techvet.TechVetOI import HectorOI
-from motorcontrollers.PWMMotorController import PWMMotorController
+from motorcontrollers.I2CMotorController import I2CMotorController
 from techvet.sensors.LineTrackingSensor import LineTrackingSensor
+from techvet.sensors.SetPointTracker import SetPointTracker
 from PID.PIDController import PIDController
 
-LINE_SENSOR_ID = 0
+LINE_SENSOR_ID = 0x08
 LINE_SENSOR_REGISTER = 0
+
+CHECKPOINT_TRACKER_ID = 0x09
+CHECKPOINT_SENSOR_REGISTER = 0
 
 DEFAULT_SPEED = .7
 
@@ -26,10 +29,15 @@ class DriveTrain(System):
 
     def __init__(self, left_pins, right_pins):
         System.__init__(self, "DriveTrain")
-        self._left_motor_controller = PWMMotorController(left_pins)
-        self._right_motor_controller = PWMMotorController(right_pins)
-        self._stick = HectorOI.drive_stick
+        self._left_motor_controller = I2CMotorController(left_pins, 0x08, 0)
+        self._right_motor_controller = I2CMotorController(right_pins, 0x08, 1)
+
         self._line_tracker = LineTrackingSensor(LINE_SENSOR_ID, LINE_SENSOR_REGISTER)
+        self._line_tracker.open()
+
+        self._checkpoint_tracker = SetPointTracker(CHECKPOINT_TRACKER_ID, CHECKPOINT_SENSOR_REGISTER)
+        self._checkpoint_tracker.track()
+
         self._pid = PIDController(P=0.0002)
 
     def drive_on_line(self):
@@ -42,17 +50,19 @@ class DriveTrain(System):
         pass
 
     def set(self, left_throttle, right_throttle):
-        if abs(right_throttle) < .5:
-            right_throttle = 0
-        if abs(left_throttle) < .5:
-            left_throttle = 0
-
         self._left_motor_controller.set(left_throttle)
         self._right_motor_controller.set(right_throttle)
 
     def stop(self):
         self._left_motor_controller.set(0)
         self._right_motor_controller.set(0)
+        self._line_tracker.stop()
+
+    def get_line_tracker_sensor_value(self):
+        return self._line_tracker.get()
+
+    def get_checkpoint_tracker_value(self):
+        return self._checkpoint_tracker.get_current_checkpoint()
 
     def get_cli_functions(self, args):
         functions = {

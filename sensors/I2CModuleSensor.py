@@ -15,6 +15,7 @@ class I2CModuleSensor:
         self._raw_data = bytearray(bytes_to_read)
         self._bytes_to_read = bytes_to_read
         self._bus = smbus.SMBus(1)
+        self._open = False
 
     @abc.abstractmethod
     def get(self):
@@ -22,14 +23,23 @@ class I2CModuleSensor:
         pass
 
     def open(self):
-        print "Opening sensor...."
         self._alive = True
-        thread = threading.Thread(target=self.query_loop)
-        thread.daemon = True
-        thread.start()
+
+        if not self._open:
+            thread = threading.Thread(target=self.query_loop)
+            thread.daemon = True
+            thread.start()
+            self._open = True
 
     def get_raw_value(self):
         return self._raw_data
+
+    def stop(self):
+        self._alive = False
+        self._open = False
+
+    def is_open(self):
+        return self._open
 
     def query_loop(self):
         while self._alive:
