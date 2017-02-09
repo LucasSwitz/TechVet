@@ -1,7 +1,7 @@
 from command.Command import Command
 from techvet.TechVetOI import HectorOI
 from techvet.systems.DriveTrain import DriveTrain
-
+import time
 
 class DriveByJoystickCommand(Command):
     def __init__(self):
@@ -11,6 +11,7 @@ class DriveByJoystickCommand(Command):
         self._stick = HectorOI.drive_stick
 
     def init(self):
+        time.sleep(5)
         self._drive_train.dispatch_message("Driving with joysticks...")
         print "Started Drive By Joystick"
 

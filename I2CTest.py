@@ -1,9 +1,8 @@
-from sensors.I2CModuleSensor import I2CModuleSensor
+from techvet.sensors.LineTrackingSensor import LineTrackingSensor
 
-sensor = I2CModuleSensor(0x08, 1)
+sensor = LineTrackingSensor(0x08, 1)
 sensor.open()
 
 while True:
-    data = sensor.get_raw_value()
-    if len(data) > 0:
-        print sensor.get_raw_value()
+    data = sensor.get()
+    print data

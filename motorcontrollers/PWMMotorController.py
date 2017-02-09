@@ -6,6 +6,7 @@ class PWMMotorController(RPiMotorController):
         RPiMotorController.__init__(self, pins)
 
     def set(self, value):
+
         if value == 0:
             self.off()
         elif value < 0:

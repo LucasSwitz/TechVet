@@ -2,7 +2,7 @@ import smbus
 import time
 import threading
 import abc
-import sys
+import subprocess
 
 BYTES_TO_READ = 4
 
@@ -12,7 +12,7 @@ class I2CModuleSensor:
         self._addr = addr
         self._alive = False
         self._register = register
-        self._raw_data = bytearray(bytes_to_read)
+        self._raw_data = [0,0,0,0]
         self._bytes_to_read = bytes_to_read
         self._bus = smbus.SMBus(1)
         self._open = False
@@ -43,9 +43,10 @@ class I2CModuleSensor:
 
     def query_loop(self):
         while self._alive:
-            time.sleep(.01)
-            read = self._bus.read_i2c_block_data(self._addr, self._bytes_to_read)
-            for i in range(0, len(read)):
-                if read[i] == 255:
-                    break
-                self._raw_data[i] = read[i]
+            try:
+                read = self._bus.read_i2c_block_data(self._addr, self._bytes_to_read)
+                for i in range(0,4):
+                    self._raw_data[i] = read[i]
+            except IOError:
+                subprocess.call(['i2cdetect', '-y', '1'])
+

@@ -1,7 +1,7 @@
 
 
 class PIDController:
-    def __init__(self, P=0.0, I=0.0, D=1.0, Derivator=0, Integrator=0, Integrator_max=500, Integrator_min=-500):
+    def __init__(self, P=0.0, I=0.0, D=0, Derivator=0, Integrator=0, Integrator_max=500, Integrator_min=-500):
 
         self.Kp = P
         self.Ki = I
